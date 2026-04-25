@@ -146,7 +146,35 @@ body {
   }
 }
 
-@keyframes pulse {
+@keyframes skeletonPulse {
+  0% { background-color: rgba(0, 0, 0, 0.05); }
+  50% { background-color: rgba(0, 0, 0, 0.1); }
+  100% { background-color: rgba(0, 0, 0, 0.05); }
+}
+
+.skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+.skeleton-text { height: 14px; width: 80%; margin-bottom: 10px; }
+.skeleton-title { height: 24px; width: 60%; margin-bottom: 20px; }
+.skeleton-btn { height: 40px; width: 100px; }
+
+/* Micro-animations */
+.btn:active, .nav-btn:active {
+  transform: scale(0.96) !important;
+}
+
+.card {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
 
   0%,
   100% {
@@ -2046,7 +2074,7 @@ tbody tr:last-child td {
   border: 1px solid rgba(99, 102, 241, .25);
 }
 
-</style></head><body><div id="globalLoader" class="loader-overlay"><div class="ims-spinner"></div><div class="loader-text" id="loaderText">Loading MCS Line Walk…</div></div><div id="loginPage"><div class="login-bg"></div><div class="login-box"><div class="login-logo"><div class="login-icon">🏭</div><div class="brand-name">MCS</div><p class="brand-tag">MCS Line Walk</p></div><div class="form-group"><label>Employee ID</label><input type="text" id="loginId" placeholder="Enter your username" autocomplete="username"></div><div class="form-group"><label>Password</label><div class="password-wrapper"><input type="password" id="loginPw" placeholder="••••••••" autocomplete="current-password"><button type="button" class="toggle-password" onclick="togglePasswordVisibility()"><span id="pwIcon">👁</span></button></div></div><div class="connection-status" id="connectionStatus"><span class="conn-dot" id="connDot"></span><span id="connText">Connecting…</span></div><button class="btn-login" id="loginBtn" onclick="doLogin()">Secure Login</button><button class="btn btn-ghost" id="retryConnectBtn" onclick="retryConnection()" style="display:none;width:100%;margin-top:8px;justify-content:center;">🔄 Retry Connection</button><div id="loginMsg" class="msg-box"></div><p style="margin-top:18px;text-align:center;font-size:.78rem;color:var(--muted);">Internal Access Only</p></div></div><div id="appShell" style="display:none;"><div class="page active" id="pageHome"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span>Line Walk</span></div></div><div class="header-nav"><div class="nav-row" id="navHome"><button class="nav-btn active" onclick="goPage('pageHome',this)">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)">Breakdown</button><button class="nav-btn" id="navCmsBtn" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><div class="lang-switcher"><button class="lang-btn" id="btnHi" onclick="setLang('hi')">हिंदी</button><button class="lang-btn active" id="btnEn" onclick="setLang('en')">EN</button></div><span id="userDisplay"></span><button class="logout-btn" onclick="doLogout()">Logout</button></div></div><div class="page-title">Pre-Production Readiness Checklist</div><div class="card info-card"><div class="info-grid"><div><span class="info-label">🏭 Plant</span><select id="infoPlant" onchange="onPlantChange()"><option value="" disabled selected>-- Select Plant --</option></select></div><div><span class="info-label">📅 Date</span><input type="date" id="infoDate"></div><div><span class="info-label">🔄 Shift</span><select id="infoShift"><option value="" disabled selected>-- Select Shift --</option></select></div><div><span class="info-label">👤 Operator</span><select id="infoOperator" onchange="renderChecklistCategories()"></select></div><div><span class="info-label">⚙️ Machine</span><select id="infoMachine" onchange="renderChecklistCategories()"></select></div><div><span class="info-label">🏢 Department</span><select id="infoDepartment" onchange="onDepartmentChange()"><option value="" disabled selected>-- Select Dept --</option></select></div></div></div><div id="progressSection" class="card progress-section" style="display:none;"><div class="progress-top"><span class="progress-label">Checklist Progress</span><span class="progress-count"><span id="checkedCount">0</span>/ <span id="totalCount">0</span></span></div><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div></div><div class="categories-grid" id="categoriesGrid"></div><div class="action-btns" style="max-width:500px;margin:28px auto 0;"><button class="btn-breakdown-link" onclick="goPage('pageBreakdown',null)">⚠ Report Breakdown</button><button class="btn-proceed" id="btnProceed" onclick="submitChecklist()">✔ Submit</button></div><p class="submit-msg" id="submitMsg"></p><p style="text-align:center;margin-top:16px;font-size:.76rem;color:var(--muted);" id="checklistHint">Select a Plant to load the checklist</p></div></div><div class="page" id="pageMonitor"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span>Monitor</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)">Checklist</button><button class="nav-btn active" onclick="goPage('pageMonitor',this)">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)">Breakdown</button><button class="nav-btn" id="mon-navCms" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><span class="live-dot" id="liveDot" style="display:none;"></span><span class="last-updated" id="lastUpdated" style="display:none;"></span><button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" style="display:none;" title="Refresh dashboard data"><span class="refresh-icon">🔄</span> Refresh</button><span id="monitorUserDisplay"></span><button class="logout-btn" onclick="doLogout()">Logout</button></div></div><div class="page-title">Monitor</div><div class="monitor-tabs"><button class="monitor-tab active" onclick="switchMonitorTab('dashboard',this)">🏭 Shopfloor Dashboard</button><button class="monitor-tab" id="roleTrackerTab" onclick="switchMonitorTab('roletracker',this)" style="display:none;">👥 Role Tracker</button></div><div class="monitor-panel active" id="panel-dashboard"><div class="sf-controls"><span class="sf-date-label">📅 Date:</span><input type="date" id="sfDateFilter" onchange="renderDashboard()"><select id="sfDeptFilter" onchange="renderDashboard()" style="display:none; padding:4px 8px; border-radius:8px; border:1px solid rgba(99, 102, 241, .25); background:rgba(99, 102, 241, .05); color:var(--indigo); font-weight:600; font-size:0.75rem;"><option value="All">All Departments</option></select><div style="display:flex;gap:8px;flex-wrap:wrap;" id="shiftFilterRow"><button class="btn-time active" onclick="setSfShift(&quot;All&quot;,this)">All Shifts</button></div></div><div class="summary-bar" id="sfSummary"></div><div id="sfKanban"></div></div><div class="monitor-panel" id="panel-roletracker"><div class="card" style="padding:20px 24px;margin-bottom:20px;"><div class="role-tracking-controls"><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);">📅 Date</label><input type="date" id="rtDate" onchange="renderRoleTracking()"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);">🔄 Shift</label><select id="rtShift" onchange="renderRoleTracking()"><option value="All">All Shifts</option></select></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);">🏢 Department</label><select id="rtDept" onchange="renderRoleTracking()"><option value="All">All Departments</option></select></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);">🏭 Plant</label><select id="rtPlant" onchange="renderRoleTracking()"><option value="All">All Plants</option></select></div></div></div><div id="rtSummaryBar" class="summary-bar" style="margin-bottom:20px;"></div><div id="rtContent"></div></div></div></div><div class="page" id="pageBreakdown"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span>Breakdown</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)">Monitor</button><button class="nav-btn active" onclick="goPage('pageBreakdown',this)">Breakdown</button><button class="nav-btn" id="bd-navCms" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><div class="lang-switcher"><button class="lang-btn" id="bdBtnHi" onclick="setLang('hi')">हिंदी</button><button class="lang-btn active" id="bdBtnEn" onclick="setLang('en')">EN</button></div><span id="bdUserDisplay"></span><button class="logout-btn" onclick="doLogout()">Logout</button></div></div><div class="page-title">Breakdown Report</div><div class="breakdown-box"><div class="card" style="padding:28px;"><div class="form-row"><div class="form-group"><label>🏭 Plant</label><select id="bdPlant" onchange="populateDropdowns()"><option value="" disabled selected>Select Plant</option></select></div><div class="form-group"><label>📅 Date</label><input type="date" id="bdDate"></div></div><div class="form-row"><div class="form-group"><label>🔄 Shift</label><select id="bdShift"><option value="" disabled selected>Select Shift</option></select></div><div class="form-group"><label>👤 Operator</label><select id="bdOperator"></select></div></div><div class="form-group"><label>⚙️ Machine ID</label><select id="bdMachine"></select></div><div class="form-group"><label>📝 Breakdown Reason</label><textarea id="bdReason" placeholder="Describe the breakdown issue…"></textarea></div><button class="btn btn-danger" style="width:100%;justify-content:center;padding:14px;" onclick="submitBreakdown()">Submit Report</button><p class="submit-msg" id="bdMsg"></p></div></div></div></div><div class="page" id="pageCms"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span>CMS</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)">Breakdown</button><button class="nav-btn active" onclick="goPage('pageCms',this)">CMS</button></div></div><div class="header-right"><span id="cmsUserDisplay"></span><button class="logout-btn" onclick="doLogout()">Logout</button></div></div><div class="page-title">Management CMS</div><div class="tab-row"><button class="tab-btn active" onclick="cmsTab('users',this)">👤 Users</button><button class="tab-btn" onclick="cmsTab('machines',this)">⚙️ Machines</button><button class="tab-btn" onclick="cmsTab('checklist',this)">📋 Checklist Items</button><button class="tab-btn" onclick="cmsTab('plants',this)">🏭 Plants</button><button class="tab-btn" onclick="cmsTab('roles',this)">🎭 Roles</button><button class="tab-btn" onclick="cmsTab('departments',this)">🏢 Departments</button><button class="tab-btn" onclick="cmsTab('shifts',this)">🔄 Shifts</button></div><div class="cms-section active" id="cms-users"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openUserEditCard()">+Add User</button></div><div id="userEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Username</th><th>Role</th><th>Department</th><th>Plant</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="userTbody"></tbody></table></div></div><div class="cms-section" id="cms-machines"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openMachineEditCard()">+Add Machine</button></div><div id="machineEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Machine Name</th><th>Department</th><th>Plant</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="machineTbody"></tbody></table></div></div><div class="cms-section" id="cms-checklist"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openChecklistEditCard()">+Add Item</button></div><div id="checklistEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Plant</th><th>Dept</th><th>Role</th><th>Category</th><th>Checkpoint</th><th>Criteria</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="itemTbody"></tbody></table></div></div><div class="cms-section" id="cms-plants"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openPlantEditCard()">+Add Plant</button></div><div id="plantEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Plant Name</th><th>Code</th><th>Location</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="plantTbody"></tbody></table></div></div><div class="cms-section" id="cms-roles"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openRoleEditCard()">+Add Role</button></div><div id="roleEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Role Name</th><th>Level</th><th>Can Access CMS</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="roleTbody"></tbody></table></div></div><div class="cms-section" id="cms-departments"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openDeptEditCard()">+Add Department</button></div><div id="deptEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Department Name</th><th>Code</th><th>Plant</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="deptTbody"></tbody></table></div></div><div class="cms-section" id="cms-shifts"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openShiftEditCard()">+Add Shift</button></div><div id="shiftEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Shift Name</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="shiftTbody"></tbody></table></div></div></div></div></div><div id="sfModal" class="modal-overlay"><div class="modal-card"><div class="modal-hdr"><span class="modal-title" id="sfModalTitle">Details</span><button class="modal-x" onclick="closeModal()">✕</button></div><div class="modal-body" id="sfModalBody"></div></div></div><div id="toast"></div><script>'use strict';
+</style></head><body><div id="globalLoader" class="loader-overlay"><div class="ims-spinner"></div><div class="loader-text" id="loaderText" data-en="Loading MCS Line Walk…" data-hi="MCS लाइन वॉक लोड हो रहा है…">Loading MCS Line Walk…</div></div><div id="loginPage"><div class="login-bg"></div><div class="login-box"><div class="login-logo"><div class="login-icon">🏭</div><div class="brand-name">MCS</div><p class="brand-tag" data-en="MCS Line Walk" data-hi="MCS लाइन वॉक">MCS Line Walk</p></div><div class="form-group"><label data-en="Employee ID" data-hi="कर्मचारी आईडी">Employee ID</label><input type="text" id="loginId" placeholder="Enter your username" data-en="Enter your username" data-hi="अपना उपयोगकर्ता नाम दर्ज करें"></div><div class="form-group"><label data-en="Password" data-hi="पासवर्ड">Password</label><div class="password-wrapper"><input type="password" id="loginPw" placeholder="••••••••" data-en="••••••••" data-hi="••••••••"><button type="button" class="toggle-password" onclick="togglePasswordVisibility()"><span id="pwIcon">👁</span></button></div></div><div class="connection-status" id="connectionStatus"><span class="conn-dot" id="connDot"></span><span id="connText" data-en="Connecting…" data-hi="कनेक्ट हो रहा है…">Connecting…</span></div><button class="btn-login" id="loginBtn" onclick="doLogin()" data-en="Secure Login" data-hi="सुरक्षित लॉगिन">Secure Login</button><button class="btn btn-ghost" id="retryConnectBtn" onclick="retryConnection()" style="display:none;width:100%;margin-top:8px;justify-content:center;" data-en="🔄 Retry Connection" data-hi="🔄 कनेक्शन पुनः प्रयास करें">🔄 Retry Connection</button><div id="loginMsg" class="msg-box"></div><p style="margin-top:18px;text-align:center;font-size:.78rem;color:var(--muted);" data-en="Internal Access Only" data-hi="केवल आंतरिक पहुंच">Internal Access Only</p></div></div><div id="appShell" style="display:none;"><div class="page active" id="pageHome"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span data-en="Line Walk" data-hi="लाइन वॉक">Line Walk</span></div></div><div class="header-nav"><div class="nav-row" id="navHome"><button class="nav-btn active" onclick="goPage('pageHome',this)" data-en="Checklist" data-hi="चेकलिस्ट">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)" data-en="Monitor" data-hi="मॉनिटर">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)" data-en="Breakdown" data-hi="ब्रेकडाउन">Breakdown</button><button class="nav-btn" id="navCmsBtn" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><div class="lang-switcher"><button class="lang-btn" id="btnHi" onclick="setLang('hi')">हिंदी</button><button class="lang-btn active" id="btnEn" onclick="setLang('en')">EN</button></div><span id="userDisplay"></span><button class="logout-btn" onclick="doLogout()" data-en="Logout" data-hi="लॉग आउट">Logout</button></div></div><div class="page-title" data-en="Pre-Production Readiness Checklist" data-hi="प्री-प्रोडक्शन तैयारी चेकलिस्ट">Pre-Production Readiness Checklist</div><div class="card info-card"><div class="info-grid"><div><span class="info-label" data-en="🏭 Plant" data-hi="🏭 प्लांट">🏭 Plant</span><select id="infoPlant" onchange="onPlantChange()"><option value="" disabled selected data-en="-- Select Plant --" data-hi="-- प्लांट चुनें --">-- Select Plant --</option></select></div><div><span class="info-label" data-en="📅 Date" data-hi="📅 दिनांक">📅 Date</span><input type="date" id="infoDate"></div><div><span class="info-label" data-en="🔄 Shift" data-hi="🔄 शिफ्ट">🔄 Shift</span><select id="infoShift"><option value="" disabled selected data-en="-- Select Shift --" data-hi="-- शिफ्ट चुनें --">-- Select Shift --</option></select></div><div><span class="info-label" data-en="👤 Operator" data-hi="👤 ऑपरेटर">👤 Operator</span><select id="infoOperator" onchange="renderChecklistCategories()"></select></div><div><span class="info-label" data-en="⚙️ Machine" data-hi="⚙️ मशीन">⚙️ Machine</span><select id="infoMachine" onchange="renderChecklistCategories()"></select></div><div><span class="info-label" data-en="🏢 Department" data-hi="🏢 विभाग">🏢 Department</span><select id="infoDepartment" onchange="onDepartmentChange()"><option value="" disabled selected data-en="-- Select Dept --" data-hi="-- विभाग चुनें --">-- Select Dept --</option></select></div></div></div><div id="progressSection" class="card progress-section" style="display:none;"><div class="progress-top"><span class="progress-label" data-en="Checklist Progress" data-hi="चेकलिस्ट प्रगति">Checklist Progress</span><span class="progress-count"><span id="checkedCount">0</span>/ <span id="totalCount">0</span></span></div><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div></div><div class="categories-grid" id="categoriesGrid"></div><div class="action-btns" style="max-width:500px;margin:28px auto 0;"><button class="btn-breakdown-link" onclick="goPage('pageBreakdown',null)" data-en="⚠ Report Breakdown" data-hi="⚠ ब्रेकडाउन रिपोर्ट करें">⚠ Report Breakdown</button><button class="btn-proceed" id="btnProceed" onclick="submitChecklist()" data-en="✔ Submit" data-hi="✔ सबमिट करें">✔ Submit</button></div><p class="submit-msg" id="submitMsg"></p><p style="text-align:center;margin-top:16px;font-size:.76rem;color:var(--muted);" id="checklistHint" data-en="Select a Plant to load the checklist" data-hi="चेकलिस्ट लोड करने के लिए प्लांट चुनें">Select a Plant to load the checklist</p></div></div><div class="page" id="pageMonitor"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span data-en="Monitor" data-hi="मॉनिटर">Monitor</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)" data-en="Checklist" data-hi="चेकलिस्ट">Checklist</button><button class="nav-btn active" onclick="goPage('pageMonitor',this)" data-en="Monitor" data-hi="मॉनिटर">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)" data-en="Breakdown" data-hi="ब्रेकडाउन">Breakdown</button><button class="nav-btn" id="mon-navCms" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><span class="live-dot" id="liveDot" style="display:none;"></span><span class="last-updated" id="lastUpdated" style="display:none;"></span><button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()" style="display:none;" title="Refresh dashboard data" data-en="🔄 Refresh" data-hi="🔄 रिफ्रेश">🔄 Refresh</button><span id="monitorUserDisplay"></span><button class="logout-btn" onclick="doLogout()" data-en="Logout" data-hi="लॉग आउट">Logout</button></div></div><div class="page-title" data-en="Monitor" data-hi="मॉनिटर">Monitor</div><div class="monitor-tabs"><button class="monitor-tab active" onclick="switchMonitorTab('dashboard',this)" data-en="🏭 Shopfloor Dashboard" data-hi="🏭 शॉपफ्लोर डैशबोर्ड">🏭 Shopfloor Dashboard</button><button class="monitor-tab" id="roleTrackerTab" onclick="switchMonitorTab('roletracker',this)" style="display:none;" data-en="👥 Role Tracker" data-hi="👥 रोल ट्रैकर">👥 Role Tracker</button></div><div class="monitor-panel active" id="panel-dashboard"><div class="sf-controls"><span class="sf-date-label" data-en="📅 Date:" data-hi="📅 दिनांक:">📅 Date:</span><input type="date" id="sfDateFilter" onchange="renderDashboard()"><select id="sfDeptFilter" onchange="renderDashboard()" style="display:none; padding:4px 8px; border-radius:8px; border:1px solid rgba(99, 102, 241, .25); background:rgba(99, 102, 241, .05); color:var(--indigo); font-weight:600; font-size:0.75rem;"><option value="All" data-en="All Departments" data-hi="सभी विभाग">All Departments</option></select><div style="display:flex;gap:8px;flex-wrap:wrap;" id="shiftFilterRow"><button class="btn-time active" onclick="setSfShift(&quot;All&quot;,this)" data-en="All Shifts" data-hi="सभी शिफ्ट">All Shifts</button></div></div><div class="summary-bar" id="sfSummary"></div><div id="sfKanban"></div></div><div class="monitor-panel" id="panel-roletracker"><div class="card" style="padding:20px 24px;margin-bottom:20px;"><div class="role-tracking-controls"><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);" data-en="📅 Date" data-hi="📅 दिनांक">📅 Date</label><input type="date" id="rtDate" onchange="renderRoleTracking()"></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);" data-en="🔄 Shift" data-hi="🔄 शिफ्ट">🔄 Shift</label><select id="rtShift" onchange="renderRoleTracking()"><option value="All" data-en="All Shifts" data-hi="सभी शिफ्ट">All Shifts</option></select></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);" data-en="🏢 Department" data-hi="🏢 विभाग">🏢 Department</label><select id="rtDept" onchange="renderRoleTracking()"><option value="All" data-en="All Departments" data-hi="सभी विभाग">All Departments</option></select></div><div style="display:flex;flex-direction:column;gap:6px;flex:1;"><label style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);" data-en="🏭 Plant" data-hi="🏭 प्लांट">🏭 Plant</label><select id="rtPlant" onchange="renderRoleTracking()"><option value="All" data-en="All Plants" data-hi="सभी प्लांट">All Plants</option></select></div></div></div><div id="rtSummaryBar" class="summary-bar" style="margin-bottom:20px;"></div><div id="rtContent"></div></div></div></div><div class="page" id="pageBreakdown"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span data-en="Breakdown" data-hi="ब्रेकडाउन">Breakdown</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)" data-en="Checklist" data-hi="चेकलिस्ट">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)" data-en="Monitor" data-hi="मॉनिटर">Monitor</button><button class="nav-btn active" onclick="goPage('pageBreakdown',this)" data-en="Breakdown" data-hi="ब्रेकडाउन">Breakdown</button><button class="nav-btn" id="bd-navCms" onclick="goPage('pageCms',this)" style="display:none;">CMS</button></div></div><div class="header-right"><div class="lang-switcher"><button class="lang-btn" id="bdBtnHi" onclick="setLang('hi')">हिंदी</button><button class="lang-btn active" id="bdBtnEn" onclick="setLang('en')">EN</button></div><span id="bdUserDisplay"></span><button class="logout-btn" onclick="doLogout()" data-en="Logout" data-hi="लॉग आउट">Logout</button></div></div><div class="page-title" data-en="Breakdown Report" data-hi="ब्रेकडाउन रिपोर्ट">Breakdown Report</div><div class="breakdown-box"><div class="card" style="padding:28px;"><div class="form-row"><div class="form-group"><label data-en="🏭 Plant" data-hi="🏭 प्लांट">🏭 Plant</label><select id="bdPlant" onchange="populateDropdowns()"><option value="" disabled selected data-en="Select Plant" data-hi="प्लांट चुनें">Select Plant</option></select></div><div class="form-group"><label data-en="📅 Date" data-hi="📅 दिनांक">📅 Date</label><input type="date" id="bdDate"></div></div><div class="form-row"><div class="form-group"><label data-en="🔄 Shift" data-hi="🔄 शिफ्ट">🔄 Shift</label><select id="bdShift"><option value="" disabled selected data-en="Select Shift" data-hi="शिफ्ट चुनें">Select Shift</option></select></div><div class="form-group"><label data-en="👤 Operator" data-hi="👤 ऑपरेटर">👤 Operator</label><select id="bdOperator"></select></div></div><div class="form-group"><label data-en="⚙️ Machine ID" data-hi="⚙️ मशीन आईडी">⚙️ Machine ID</label><select id="bdMachine"></select></div><div class="form-group"><label data-en="📝 Breakdown Reason" data-hi="📝 ब्रेकडाउन का कारण">📝 Breakdown Reason</label><textarea id="bdReason" placeholder="Describe the breakdown issue…" data-en="Describe the breakdown issue…" data-hi="ब्रेकडाउन समस्या का वर्णन करें…"></textarea></div><button class="btn btn-danger" style="width:100%;justify-content:center;padding:14px;" onclick="submitBreakdown()" data-en="Submit Report" data-hi="रिपोर्ट सबमिट करें">Submit Report</button><p class="submit-msg" id="bdMsg"></p></div></div></div></div><div class="page" id="pageCms"><div class="page-wrap"><div class="header"><div class="header-left"><div style="font-size:1.6rem;">🏭</div><div class="brand-text">MCS<span>CMS</span></div></div><div class="header-nav"><div class="nav-row"><button class="nav-btn" onclick="goPage('pageHome',this)">Checklist</button><button class="nav-btn" onclick="goPage('pageMonitor',this)">Monitor</button><button class="nav-btn" onclick="goPage('pageBreakdown',this)">Breakdown</button><button class="nav-btn active" onclick="goPage('pageCms',this)">CMS</button></div></div><div class="header-right"><span id="cmsUserDisplay"></span><button class="logout-btn" onclick="doLogout()">Logout</button></div></div><div class="page-title">Management CMS</div><div class="tab-row"><button class="tab-btn active" onclick="cmsTab('users',this)">👤 Users</button><button class="tab-btn" onclick="cmsTab('machines',this)">⚙️ Machines</button><button class="tab-btn" onclick="cmsTab('checklist',this)">📋 Checklist Items</button><button class="tab-btn" onclick="cmsTab('plants',this)">🏭 Plants</button><button class="tab-btn" onclick="cmsTab('roles',this)">🎭 Roles</button><button class="tab-btn" onclick="cmsTab('departments',this)">🏢 Departments</button><button class="tab-btn" onclick="cmsTab('shifts',this)">🔄 Shifts</button></div><div class="cms-section active" id="cms-users"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openUserEditCard()">+Add User</button></div><div id="userEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Username</th><th>Role</th><th>Department</th><th>Plant</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="userTbody"></tbody></table></div></div><div class="cms-section" id="cms-machines"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openMachineEditCard()">+Add Machine</button></div><div id="machineEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Machine Name</th><th>Department</th><th>Plant</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="machineTbody"></tbody></table></div></div><div class="cms-section" id="cms-checklist"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openChecklistEditCard()">+Add Item</button></div><div id="checklistEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Plant</th><th>Dept</th><th>Role</th><th>Category</th><th>Checkpoint</th><th>Criteria</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="itemTbody"></tbody></table></div></div><div class="cms-section" id="cms-plants"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openPlantEditCard()">+Add Plant</button></div><div id="plantEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Plant Name</th><th>Code</th><th>Location</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="plantTbody"></tbody></table></div></div><div class="cms-section" id="cms-roles"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openRoleEditCard()">+Add Role</button></div><div id="roleEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Role Name</th><th>Level</th><th>Can Access CMS</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="roleTbody"></tbody></table></div></div><div class="cms-section" id="cms-departments"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openDeptEditCard()">+Add Department</button></div><div id="deptEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Department Name</th><th>Code</th><th>Plant</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="deptTbody"></tbody></table></div></div><div class="cms-section" id="cms-shifts"><div style="display:flex;justify-content:flex-end;margin-bottom:14px;"><button class="btn btn-primary" onclick="openShiftEditCard()">+Add Shift</button></div><div id="shiftEditCard" style="display:none;"></div><div class="card table-card"><table><thead><tr><th>Shift Name</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead><tbody id="shiftTbody"></tbody></table></div></div></div></div></div><div id="sfModal" class="modal-overlay"><div class="modal-card"><div class="modal-hdr"><span class="modal-title" id="sfModalTitle">Details</span><button class="modal-x" onclick="closeModal()">✕</button></div><div class="modal-body" id="sfModalBody"></div></div></div><div id="toast"></div><script>'use strict';
 
 // ══════════════════════════════════════════
 //  CONFIG
@@ -2134,11 +2162,21 @@ function togglePasswordVisibility() {
 //  NAVIGATION
 // ══════════════════════════════════════════
 function goPage(pageId, btn) {
-  document.querySelectorAll('.page').forEach(function(p) {
-      p.classList.remove('active');
-    });
-  var pg=document.getElementById(pageId);
-  if(pg)pg.classList.add('active');
+  var currentActive = document.querySelector('.page.active');
+  if (currentActive) {
+    currentActive.style.opacity = '0';
+    currentActive.style.transform = 'translateY(10px)';
+  }
+
+  setTimeout(function() {
+    document.querySelectorAll('.page').forEach(function(p) {
+        p.classList.remove('active');
+        p.style.opacity = '';
+        p.style.transform = '';
+      });
+    var pg=document.getElementById(pageId);
+    if(pg)pg.classList.add('active');
+  }, 200);
 
   document.querySelectorAll('.nav-btn').forEach(function(b) {
       b.classList.remove('active');
@@ -2146,7 +2184,7 @@ function goPage(pageId, btn) {
   if(btn)btn.classList.add('active');
 
   if(pageId==='pageMonitor') {
-    if(state.activeMonitorTab==='dashboard') renderDashboard();
+    if(state.activeMonitorTab=== 'dashboard') renderDashboard();
     else renderRoleTracking();
     startPolling();
     showRefreshUI(true);
@@ -2176,6 +2214,7 @@ function switchMonitorTab(tab, btn) {
 }
 
 function setLang(lang) {
+  state.lang = lang;
   document.querySelectorAll('.lang-btn').forEach(function(b) {
       b.classList.remove('active');
     });
@@ -2185,9 +2224,7 @@ function setLang(lang) {
     if(h1)h1.classList.add('active');
     var h2=document.getElementById('bdBtnHi');
     if(h2)h2.classList.add('active');
-  }
-
-  else {
+  } else {
     var e1=document.getElementById('btnEn');
     if(e1)e1.classList.add('active');
     var e2=document.getElementById('bdBtnEn');
@@ -2195,6 +2232,26 @@ function setLang(lang) {
   }
 
   document.documentElement.lang=lang;
+  translateUI();
+  renderChecklistCategories(); // refresh dynamic text
+}
+
+function translateUI() {
+  var lang = state.lang || 'en';
+  document.querySelectorAll('[data-en]').forEach(function(el) {
+    var txt = el.getAttribute('data-' + lang);
+    if (txt) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = txt;
+      } else {
+        el.textContent = txt;
+      }
+    }
+  });
+}
+
+function t(en, hi) {
+  return (state.lang === 'hi' && hi) ? hi : en;
 }
 
 function doLogout() {
@@ -2726,9 +2783,13 @@ if(data.breakdownRows&&data.breakdownRows.length>0) {
     }
 
     showLoader('Connecting to MCS Line Walk…'); updateConnectionStatus('connecting');
+    state.loading = true;
+    renderChecklistCategories();
+    renderDashboard();
 
     fetchViaJSONP(API_URL).then(function(data) {
         hideLoader();
+        state.loading = false;
 
         if(data.status==='success') {
           updateConnectionStatus('connected'); applyServerData(data);
@@ -2757,9 +2818,13 @@ function retryConnection() {
   document.getElementById('retryConnectBtn').style.display='none';
   showLoader('Retrying…');
   updateConnectionStatus('connecting');
+  state.loading = true;
+  renderChecklistCategories();
+  renderDashboard();
 
   fetchViaJSONP(API_URL).then(function(data) {
       hideLoader();
+      state.loading = false;
 
       if(data.status==='success') {
         updateConnectionStatus('connected'); applyServerData(data); if(state.currentUser) {
@@ -2952,6 +3017,16 @@ function renderChecklistCategories() {
   var grid=document.getElementById('categoriesGrid'),
   hint=document.getElementById('checklistHint');
   if( !grid)return;
+
+  if (state.loading) {
+    var sk = '';
+    for(var i=0; i<4; i++) {
+      sk += '<div class="checklist-category skeleton" style="height:80px; margin-bottom:12px;"></div>';
+    }
+    grid.innerHTML = sk;
+    return;
+  }
+
   var infoPlantEl=document.getElementById('infoPlant');
   var selectedPlant=infoPlantEl&&infoPlantEl.value;
   var grouped=getGroupedCheckpoints();
@@ -2960,23 +3035,23 @@ function renderChecklistCategories() {
     var msg;
 
     if( !selectedPlant&& !(state.currentUser&&state.currentUser.plant)) {
-      msg='🏭 Please select a Plant above to load the checklist.';
+      msg= t('🏭 Please select a Plant above to load the checklist.', '🏭 चेकलिस्ट लोड करने के लिए कृपया ऊपर एक प्लांट चुनें।');
     }
 
     else if(state.connectionStatus==='offline') {
-      msg='📡 Offline — checklist data could not be loaded.';
+      msg= t('📡 Offline — checklist data could not be loaded.', '📡 ऑफलाइन — चेकलिस्ट डेटा लोड नहीं हो सका।');
     }
 
     else if(state.checklists.length===0) {
-      msg='⏳ Loading checklist from server…';
+      msg= t('⏳ Loading checklist from server…', '⏳ सर्वर से चेकलिस्ट लोड हो रही है…');
     }
 
     else {
-      msg='📋 No checklist items found for this Plant / Role / Department combination.';
+      msg= t('📋 No checklist items found for this Plant / Role / Department combination.', '📋 इस प्लांट / रोल / विभाग संयोजन के लिए कोई चेकलिस्ट आइटम नहीं मिला।');
     }
 
     grid.innerHTML='<div class="card" style="padding:24px;text-align:center;color:var(--muted);font-size:.95rem;">'+msg+'</div>';
-    if(hint)hint.textContent='Select a Plant to load the checklist';
+    if(hint) hint.textContent= t('Select a Plant to load the checklist', 'चेकलिस्ट लोड करने के लिए प्लांट चुनें');
     updateProgress();
     return;
   }
@@ -2993,7 +3068,7 @@ function renderChecklistCategories() {
           var cr=typeof item==='object' ?item.criteria:'';
           var uid=catId+'_' +idx;
           var sv=q.replace(/"/g,'&quot;');
- html+='<div class="checklist-item" id="row_' +uid+'">' + '<div class="check-top-row">' + '<span class="check-num">' +(idx+1)+'.</span>' + '<div class="check-item-text"><span class="check-label">' +q+'</span>' +(cr?'<span class="criteria-text">Criteria: ' +cr+'</span>':'')+ '</div>' + '</div>' + '<div class="check-bottom-row">' + '<input type="text" class="remark-input" id="remark_' +uid+'" placeholder="Remark (optional)" autocomplete="off">' + '<label class="cb-pill cb-ok" for="cb_ok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-ok" id="cb_ok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="ok" onchange="onStatusChange(this,&quot;ok&quot;)">' + '<span>✓</span><span>OK</span>' + '</label>' + '<label class="cb-pill cb-notok" for="cb_notok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-notok" id="cb_notok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="notok" onchange="onStatusChange(this,&quot;notok&quot;)">' + '<span>✗</span><span>Not OK</span>' + '</label>' + '</div>' + '</div>';
+          html+='<div class="checklist-item" id="row_' +uid+'">' + '<div class="check-top-row">' + '<span class="check-num">' +(idx+1)+'.</span>' + '<div class="check-item-text"><span class="check-label">' +q+'</span>' +(cr?'<span class="criteria-text">'+t('Criteria: ','मानदंड: ') +cr+'</span>':'')+ '</div>' + '</div>' + '<div class="check-bottom-row">' + '<input type="text" class="remark-input" id="remark_' +uid+'" placeholder="'+t('Remark (optional)','टिप्पणी (वैकल्पिक)')+'" autocomplete="off">' + '<label class="cb-pill cb-ok" for="cb_ok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-ok" id="cb_ok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="ok" onchange="onStatusChange(this,&quot;ok&quot;)">' + '<span>✓</span><span>'+t('OK','ठीक है')+'</span>' + '</label>' + '<label class="cb-pill cb-notok" for="cb_notok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-notok" id="cb_notok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="notok" onchange="onStatusChange(this,&quot;notok&quot;)">' + '<span>✗</span><span>'+t('Not OK','ठीक नहीं')+'</span>' + '</label>' + '</div>' + '</div>';
           });
         html+='</div></div>';
       });
@@ -3044,7 +3119,13 @@ function renderChecklistCategories() {
       var allDone=done===total; btn.classList.toggle('enabled', allDone); btn.style.opacity=allDone?'1':'0.4'; btn.style.pointerEvents=allDone?'auto':'none';
     }
 
-    if(hint)hint.textContent=done===total?'✔ All items checked — ready to submit!':'Check all items to enable submit (' +(total-done)+' remaining)';
+    if(hint) {
+      if(done===total) {
+        hint.textContent = t('✔ All items checked — ready to submit!', '✔ सभी आइटम चेक हो गए — सबमिट करने के लिए तैयार!');
+      } else {
+        hint.textContent = t('Check all items to enable submit (', 'सबमिट शुरू करने के लिए सभी आइटम चेक करें (') + (total - done) + t(' remaining)', ' शेष)');
+      }
+    }
   }
 
   function closeModal() {
@@ -3232,19 +3313,19 @@ function renderChecklistCategories() {
 
     // ── Top summary bar ──
     summary.innerHTML=
-      '<div class="card summary-card"><div class="sum-val ok">'+counts.ok+'</div><div class="sum-lbl">✅ All Clear</div></div>'+
-      '<div class="card summary-card"><div class="sum-val amber">'+counts.problem+'</div><div class="sum-lbl">⚠️ Issues</div></div>'+
-      '<div class="card summary-card"><div class="sum-val red">'+counts.breakdown+'</div><div class="sum-lbl">🔴 Breakdown</div></div>'+
-      '<div class="card summary-card"><div class="sum-val" style="color:var(--muted)">'+counts.pending+'</div><div class="sum-lbl">⚪ Pending</div></div>'+
+      '<div class="card summary-card"><div class="sum-val ok">'+counts.ok+'</div><div class="sum-lbl">'+t('✅ All Clear', '✅ सब सही है')+'</div></div>'+
+      '<div class="card summary-card"><div class="sum-val amber">'+counts.problem+'</div><div class="sum-lbl">'+t('⚠️ Issues', '⚠️ समस्याएँ')+'</div></div>'+
+      '<div class="card summary-card"><div class="sum-val red">'+counts.breakdown+'</div><div class="sum-lbl">'+t('🔴 Breakdown', '🔴 ब्रेकडाउन')+'</div></div>'+
+      '<div class="card summary-card"><div class="sum-val" style="color:var(--muted)">'+counts.pending+'</div><div class="sum-lbl">'+t('⚪ Pending', '⚪ लंबित')+'</div></div>'+
       '<div class="card summary-card" style="flex:2;min-width:200px;">'+
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'+
-          '<span style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">Overall Progress</span>'+
+          '<span style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">'+t('Overall Progress', 'कुल प्रगति')+'</span>'+
           '<span style="font-size:.9rem;font-weight:800;color:var(--text);">'+doneAll+' / '+totalAll+'</span>'+
         '</div>'+
         '<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">'+
           '<div style="height:100%;width:'+pctAll+'%;border-radius:4px;background:linear-gradient(90deg,var(--coral),var(--green));transition:width .5s ease;"></div>'+
         '</div>'+
-        '<div style="font-size:.72rem;color:var(--muted);margin-top:4px;font-weight:600;">'+pctAll+'% submitted</div>'+
+        '<div style="font-size:.72rem;color:var(--muted);margin-top:4px;font-weight:600;">'+pctAll+'% '+t('submitted', 'सबमिट किया गया')+'</div>'+
       '</div>';
 
     var colorMap={ok:'cube-ok',problem:'cube-problem',breakdown:'cube-breakdown',pending:'cube-pending'};
