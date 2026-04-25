@@ -3581,8 +3581,13 @@ function renderChecklistCategories() {
       //  ROLE TRACKING
       // ══════════════════════════════════════════
       function populateRoleTrackingFilters() {
-        var rtShift=document.getElementById('rtShift');
+        var user = state.currentUser;
+        var myLvl = user ? roleLevel(user.role) : 1;
+        var isUniverseAdmin = String(user && user.role || '').toLowerCase().trim() === 'admin';
+        var myPlant = (user && user.plant || '').trim();
+        var myDept = (user && user.department || '').trim().toUpperCase();
 
+        var rtShift=document.getElementById('rtShift');
         if(rtShift) {
           var opts='<option value="All">All Shifts</option>'; state.shifts.forEach(function(s) {
               opts+='<option value="' +s.name+'">Shift ' +s.name+'</option>';
@@ -3590,22 +3595,40 @@ function renderChecklistCategories() {
         }
 
         var rtDept=document.getElementById('rtDept');
-
         if(rtDept) {
           var depts=[]; state.departments.forEach(function(d) {
-              if(depts.indexOf(d.name.toUpperCase())===-1)depts.push(d.name.toUpperCase());
+              var dPlant = (d.plant || '').trim();
+              if(!isUniverseAdmin && myPlant && dPlant && dPlant !== myPlant) return;
+              if(!isUniverseAdmin && myLvl < 5 && myDept && d.name.toUpperCase() !== myDept) return;
 
-            }); var dOpts='<option value="All">All Departments</option>'; depts.forEach(function(d) {
+              if(depts.indexOf(d.name.toUpperCase())===-1)depts.push(d.name.toUpperCase());
+            }); 
+            var dOpts='<option value="All">All Departments</option>'; 
+            depts.forEach(function(d) {
               dOpts+='<option value="' +d+'">' +d+'</option>';
-            }); rtDept.innerHTML=dOpts;
+            }); 
+            rtDept.innerHTML=dOpts;
+            if(!isUniverseAdmin && myLvl < 5 && myDept && depts.indexOf(myDept) !== -1) {
+                rtDept.value = myDept;
+                rtDept.disabled = true;
+            } else {
+                rtDept.disabled = false;
+            }
         }
 
         var rtPlant=document.getElementById('rtPlant');
-
         if(rtPlant) {
           var pOpts='<option value="All">All Plants</option>'; getActivePlants().forEach(function(p) {
+              if(!isUniverseAdmin && myPlant && p.name !== myPlant) return;
               pOpts+='<option value="' +p.name+'">' +p.name+'</option>';
-            }); rtPlant.innerHTML=pOpts;
+            }); 
+            rtPlant.innerHTML=pOpts;
+            if(!isUniverseAdmin && myPlant) {
+                rtPlant.value = myPlant;
+                rtPlant.disabled = true;
+            } else {
+                rtPlant.disabled = false;
+            }
         }
 
         var rtDate=document.getElementById('rtDate'); if(rtDate)rtDate.value=new Date().toISOString().split('T')[0];
@@ -3625,10 +3648,31 @@ function renderChecklistCategories() {
 
         var trackedRoles=state.roles.map(function(r){return r.name.trim();});
 
+        var myUser = state.currentUser;
+        var myLvl = myUser ? roleLevel(myUser.role) : 1;
+        var isUniverseAdmin = String(myUser && myUser.role || '').toLowerCase().trim() === 'admin';
+        var myPlant = (myUser && myUser.plant || '').trim();
+        var myDept = (myUser && myUser.department || '').trim().toUpperCase();
+
         var trackedUsers=state.users.filter(function(u) {
-            var role=(u.role||'').trim(); return trackedRoles.some(function(tr) {
+            var role=(u.role||'').trim(); 
+            var isValidRole = trackedRoles.some(function(tr) {
                 return tr.toLowerCase()===role.toLowerCase();
-              });
+            });
+            if (!isValidRole) return false;
+
+            if (isUniverseAdmin) return true;
+            
+            var uLvl = roleLevel(role);
+            if (uLvl >= myLvl) return false;
+
+            var uPlant = (u.plant || '').trim();
+            if (myPlant && uPlant && uPlant !== myPlant) return false;
+
+            var uDept = (u.department || '').trim().toUpperCase();
+            if (myLvl < 5 && myDept && uDept && uDept !== myDept) return false;
+
+            return true;
           });
 
         if(filterDept !=='All')trackedUsers=trackedUsers.filter(function(u) {
