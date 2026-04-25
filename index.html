@@ -3218,14 +3218,21 @@ function renderChecklistCategories() {
 
   function populateDashboardDeptFilter() {
     var user = state.currentUser;
-    var isAdmin = user && roleLevel(user.role) >= 5;
+    var isUniverseAdmin = String(user && user.role || '').toLowerCase().trim() === 'admin';
+    var myLvl = user ? roleLevel(user.role) : 1;
     var df = document.getElementById('sfDeptFilter');
     if(!df) return;
-    if(isAdmin) {
+
+    if(isUniverseAdmin || myLvl >= 5) {
       df.style.display = 'inline-block';
       var depts = ['All'];
       state.machines.forEach(function(m){
         var d = (m.department||'').trim().toUpperCase();
+        var mPlant = (m.plant||'').trim();
+        var uPlant = (user && user.plant||'').trim();
+        
+        if (!isUniverseAdmin && uPlant && mPlant !== uPlant) return;
+        
         if(d && depts.indexOf(d)===-1) depts.push(d);
       });
       var html = '';
@@ -3350,22 +3357,30 @@ function renderChecklistCategories() {
     var isPrivileged = isAdmin; // for dashboard counters
 
     var machines=state.machines.filter(function(m) {
+      if (!user) return false;
       var mPlant=(m.plant||'').trim();
-      var uPlant=(user&&user.plant||'').trim();
-      // Plant restriction: Only Universe Admin skips the plant check.
-      // PlantHead (also lvl 5) is restricted to uPlant === mPlant.
-      var plantOk = isUniverseAdmin || !mPlant || !uPlant || mPlant === uPlant;
-
+      var uPlant=(user.plant||'').trim();
       var mDept=(m.department||'').trim().toUpperCase();
-      var uDept=(user&&user.department||'').trim().toUpperCase();
-      // Dept restriction: Universe Admin and PlantHeads skip the dept check.
-      var deptOk = isUniverseAdmin || isPlantHead || isAdmin || !uDept || mDept === uDept;
+      var uDept=(user.department||'').trim().toUpperCase();
 
-      var df=document.getElementById('sfDeptFilter');
-      if((isUniverseAdmin || isPlantHead || isAdmin) && df && df.value !== 'All') {
-        if(mDept !== df.value) return false;
+      var isUniverse = String(user.role || '').toLowerCase().trim() === 'admin';
+      var myLvl = roleLevel(user.role);
+
+      // 1. Plant restriction: Only Universe Admin can see all plants. 
+      // Everyone else is restricted to their assigned plant.
+      if (!isUniverse && uPlant && mPlant !== uPlant) return false;
+
+      // 2. Department restriction & Dropdown Filter:
+      if (isUniverse || myLvl >= 5) {
+         var df=document.getElementById('sfDeptFilter');
+         if(df && df.value !== 'All' && mDept !== df.value) return false;
+         return true; // Admin/PlantHead sees all allowed depts
       }
-      return plantOk&&deptOk;
+      
+      // Strict department check for lower roles (Level <= 4)
+      if (!uDept || mDept !== uDept) return false;
+
+      return true;
     });
 
     var machineStatus={};
