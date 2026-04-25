@@ -76,8 +76,16 @@ function handleDataRequest(e, callback , type) {
     );
 
     // ── Checklist master items ─────────────────────────────
-    // FIX F5: Normalise every known column variant for Checkpoint
-    const checklists = sheetToObjects("ChecklistMaster").filter(c => {
+    // Zip English and Hindi tabs line-by-line assuming identical structure
+    const checklistsHiRaw = sheetToObjects("ChecklistMasterHindi");
+
+    const checklists = sheetToObjects("ChecklistMaster").map((c, i) => {
+      const cHi = checklistsHiRaw[i] || {};
+      c['Checkpoint_Hi'] = cHi['Checkpoint'] || cHi['checkpoint'] || cHi['Check Point'] || '';
+      c['Criteria_Hi'] = cHi['Criteria'] || cHi['criteria'] || '';
+      c['Checkpoint Type_Hi'] = cHi['Checkpoint Type'] || cHi['checkpoint type'] || '';
+      return c;
+    }).filter(c => {
       const cp = c['Checkpoint']             ||
                  c['checkpoint']             ||
                  c['Check Point']            ||

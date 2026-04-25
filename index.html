@@ -3030,13 +3030,21 @@ function getGroupedCheckpoints() {
 
   filtered.forEach(function(cp) {
       var category=(cp['Checkpoint Type']||'General').trim();
+      var categoryHi=(cp['Checkpoint Type_Hi']||category).trim();
       var question=(cp['Checkpoint']||'').trim();
+      var questionHi=(cp['Checkpoint_Hi']||question).trim();
       var criteria=(cp['Criteria']||'').trim();
+      var criteriaHi=(cp['Criteria_Hi']||criteria).trim();
+
       if( !question)return;
       if( !grouped[category])grouped[category]=[];
 
       grouped[category].push({
-        question:question, criteria:criteria
+        question:question,
+        questionHi:questionHi,
+        criteria:criteria,
+        criteriaHi:criteriaHi,
+        categoryHi:categoryHi
       });
   });
 return grouped;
@@ -3090,14 +3098,48 @@ function renderChecklistCategories() {
   Object.keys(grouped).forEach(function(category) {
       var items=grouped[category];
       var catId='cat_' +category.replace(/[^a-zA-Z0-9]/g, '_');
-      html+='<div class="checklist-category open" id="' +catId+'">' + '<button class="category-header" onclick="toggleCategory(this)">' + '<div class="cat-icon">📋</div>' + '<div class="cat-info"><div class="cat-title">' +category+'</div><div class="cat-count">' +items.length+' items</div></div>' + '<span class="cat-chevron">▼</span>' + '</button>' + '<div class="checklist-items" style="max-height:5000px;">';
+      var categoryHi=items[0].categoryHi || category;
+      var displayCat = (window.currentLang === 'hi') ? categoryHi : category;
+
+      html+='<div class="checklist-category open" id="' +catId+'">' + 
+      '<button class="category-header" onclick="toggleCategory(this)">' + 
+      '<div class="cat-icon">📋</div>' + 
+      '<div class="cat-info"><div class="cat-title" data-en="'+category.replace(/"/g,'&quot;')+'" data-hi="'+categoryHi.replace(/"/g,'&quot;')+'">' +displayCat+'</div><div class="cat-count">' +items.length+' '+t('items','आइटम')+'</div></div>' + 
+      '<span class="cat-chevron">▼</span>' + 
+      '</button>' + 
+      '<div class="checklist-items" style="max-height:5000px;">';
 
       items.forEach(function(item, idx) {
-          var q=typeof item==='object' ?item.question:item;
-          var cr=typeof item==='object' ?item.criteria:'';
+          var qEn=typeof item==='object' ?item.question:item;
+          var qHi=typeof item==='object' && item.questionHi ? item.questionHi : qEn;
+          var crEn=typeof item==='object' ?item.criteria:'';
+          var crHi=typeof item==='object' && item.criteriaHi ? item.criteriaHi : crEn;
+          
           var uid=catId+'_' +idx;
-          var sv=q.replace(/"/g,'&quot;');
-          html+='<div class="checklist-item" id="row_' +uid+'">' + '<div class="check-top-row">' + '<span class="check-num">' +(idx+1)+'.</span>' + '<div class="check-item-text"><span class="check-label">' +q+'</span>' +(cr?'<span class="criteria-text">'+t('Criteria: ','मानदंड: ') +cr+'</span>':'')+ '</div>' + '</div>' + '<div class="check-bottom-row">' + '<input type="text" class="remark-input" id="remark_' +uid+'" placeholder="'+t('Remark (optional)','टिप्पणी (वैकल्पिक)')+'" autocomplete="off">' + '<label class="cb-pill cb-ok" for="cb_ok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-ok" id="cb_ok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="ok" onchange="onStatusChange(this,&quot;ok&quot;)">' + '<span>✓</span><span>'+t('OK','ठीक है')+'</span>' + '</label>' + '<label class="cb-pill cb-notok" for="cb_notok_' +uid+'">' + '<input type="checkbox" class="criteria-checkbox cb-type-notok" id="cb_notok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="notok" onchange="onStatusChange(this,&quot;notok&quot;)">' + '<span>✗</span><span>'+t('Not OK','ठीक नहीं')+'</span>' + '</label>' + '</div>' + '</div>';
+          var sv=qEn.replace(/"/g,'&quot;');
+          var displayQ = (window.currentLang === 'hi') ? qHi : qEn;
+          var displayCr = (window.currentLang === 'hi') ? crHi : crEn;
+          
+          html+='<div class="checklist-item" id="row_' +uid+'">' + 
+          '<div class="check-top-row">' + 
+          '<span class="check-num">' +(idx+1)+'.</span>' + 
+          '<div class="check-item-text">' +
+          '<span class="check-label" data-en="'+qEn.replace(/"/g,'&quot;')+'" data-hi="'+qHi.replace(/"/g,'&quot;')+'">' +displayQ+'</span>' +
+          (crEn?'<span class="criteria-text" data-en="Criteria: '+crEn.replace(/"/g,'&quot;')+'" data-hi="मानदंड: '+crHi.replace(/"/g,'&quot;')+'">'+((window.currentLang==='hi'?'मानदंड: ':'Criteria: ')+displayCr)+'</span>':'')+ 
+          '</div>' + 
+          '</div>' + 
+          '<div class="check-bottom-row">' + 
+          '<input type="text" class="remark-input" id="remark_' +uid+'" placeholder="'+t('Remark (optional)','टिप्पणी (वैकल्पिक)')+'" autocomplete="off">' + 
+          '<label class="cb-pill cb-ok" for="cb_ok_' +uid+'">' + 
+          '<input type="checkbox" class="criteria-checkbox cb-type-ok" id="cb_ok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="ok" onchange="onStatusChange(this,&quot;ok&quot;)">' + 
+          '<span>✓</span><span data-en="OK" data-hi="ठीक है">'+t('OK','ठीक है')+'</span>' + 
+          '</label>' + 
+          '<label class="cb-pill cb-notok" for="cb_notok_' +uid+'">' + 
+          '<input type="checkbox" class="criteria-checkbox cb-type-notok" id="cb_notok_' +uid+'" value="' +sv+'" data-uid="' +uid+'" data-type="notok" onchange="onStatusChange(this,&quot;notok&quot;)">' + 
+          '<span>✗</span><span data-en="Not OK" data-hi="ठीक नहीं">'+t('Not OK','ठीक नहीं')+'</span>' + 
+          '</label>' + 
+          '</div>' + 
+          '</div>';
           });
         html+='</div></div>';
       });
