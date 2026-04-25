@@ -2276,7 +2276,12 @@ function getActivePlants() {
 
 function buildPlantOptions(selectedPlant) {
   var plants=getActivePlants();
-  var opts='<option value="" disabled'+(( !selectedPlant)?' selected':'')+'>-- Select Plant --</option>';
+  // Strictly filter the list if a specific plant is mandated
+  if (selectedPlant) {
+    plants = plants.filter(function(p) { return p.name === selectedPlant; });
+  }
+
+  var opts='<option value="" disabled text="-- Select Plant --"'+(( !selectedPlant)?' selected':'')+'>-- Select Plant --</option>';
 
   plants.forEach(function(p) {
       opts+='<option value="' +p.name+'"' +(p.name===selectedPlant?' selected':'')+'>' +p.name+(p.location?' (' +p.location+')':'')+' </option>';
@@ -2417,7 +2422,11 @@ function populateDropdowns() {
   var lvl=user?roleLevel(user.role): 1;
   var isAdmin=lvl>=5;
 
-  var selectedPlant=(document.getElementById('infoPlant')&&document.getElementById('infoPlant').value)||(user&& !isUniverseAdmin?user.plant:'')||'';
+  var infoPlant = document.getElementById('infoPlant');
+  var bdPlant = document.getElementById('bdPlant');
+  
+  // Get currently active plant from whatever page is visible
+  var selectedPlant = (infoPlant && infoPlant.value) || (bdPlant && bdPlant.value) || (user && !isUniverseAdmin ? user.plant : '') || '';
 
   // Shifts
   var activeShifts=state.shifts.filter(function(s) {
