@@ -2302,10 +2302,13 @@ function populatePlantDropdowns(lockedPlant) {
 function onPlantChange() {
   var deptEl = document.getElementById('infoDepartment');
   var user = state.currentUser;
-  var lvl = user ? roleLevel(user.role) : 1;
-  var isAdmin = lvl >= 5;
+  var role = user ? String(user.role || '').toLowerCase().trim() : '';
+  var isAdmin = role === 'admin';
+  var isPlantHead = role === 'planthead';
+  var isPrivileged = isAdmin || isPlantHead || roleLevel(user.role) >= 5;
+
   // Only reset if user is not locked to a dept (admin/L3+)
-  if (deptEl && (isAdmin || !user || !user.department)) {
+  if (deptEl && (isPrivileged || !user || !user.department)) {
     deptEl.value = '';
   }
   populateDropdowns();
@@ -2332,10 +2335,12 @@ function initApp() {
     });
 
   var lvl=roleLevel(user.role);
-  var matchedRole = state.roles && state.roles.find(function(r) { return r.name.toLowerCase() === (user.role || '').toLowerCase(); });
+  var roleNm = String(user.role || '').toLowerCase().trim();
+  var isUniverseAdmin = roleNm === 'admin';
+  var matchedRole = state.roles && state.roles.find(function(r) { return r.name.toLowerCase() === roleNm; });
   var isPrivileged = matchedRole ? (String(matchedRole.cms_access).toLowerCase() === 'true') : (lvl >= 5);
 
-  populatePlantDropdowns(lvl>=5?null:(user.plant||null)); // Admin = free plant
+  populatePlantDropdowns(isUniverseAdmin?null:(user.plant||null)); // Only Admin = free plant
 
   populateDropdowns();
   renderChecklistCategories();
@@ -2406,10 +2411,13 @@ function getVirtualPlantOverall(plant) {
 // ══════════════════════════════════════════
 function populateDropdowns() {
   var user=state.currentUser;
+  var roleNm = String(user.role || '').toLowerCase().trim();
+  var isUniverseAdmin = roleNm === 'admin';
+  var isPlantHead = roleNm === 'planthead';
   var lvl=user?roleLevel(user.role): 1;
   var isAdmin=lvl>=5;
 
-  var selectedPlant=(document.getElementById('infoPlant')&&document.getElementById('infoPlant').value)||(user&& !isAdmin?user.plant:'')||'';
+  var selectedPlant=(document.getElementById('infoPlant')&&document.getElementById('infoPlant').value)||(user&& !isUniverseAdmin?user.plant:'')||'';
 
   // Shifts
   var activeShifts=state.shifts.filter(function(s) {
@@ -3271,18 +3279,29 @@ function renderChecklistCategories() {
     var sfdf=document.getElementById('sfDateFilter');
     var filterDate=sfdf?sfdf.value:new Date().toISOString().split('T')[0];
     var user=state.currentUser;
+    var roleNm = String(user.role || '').toLowerCase().trim();
+    var isUniverseAdmin = roleNm === 'admin';
+    var isPlantHead = roleNm === 'planthead';
     var lvl=user?roleLevel(user.role):1;
     var isAdmin=lvl>=5;
+    var isPrivileged = isAdmin; // for dashboard counters
 
     var machines=state.machines.filter(function(m) {
       var mPlant=(m.plant||'').trim();
       var uPlant=(user&&user.plant||'').trim();
-      var plantOk=isAdmin||!mPlant||!uPlant||mPlant===uPlant;
+      // Plant restriction: Only Universe Admin skips the plant check.
+      // PlantHead (also lvl 5) is restricted to uPlant === mPlant.
+      var plantOk = isUniverseAdmin || !mPlant || !uPlant || mPlant === uPlant;
+
       var mDept=(m.department||'').trim().toUpperCase();
       var uDept=(user&&user.department||'').trim().toUpperCase();
-      var deptOk=isAdmin||!uDept||mDept===uDept;
+      // Dept restriction: Universe Admin and PlantHeads skip the dept check.
+      var deptOk = isUniverseAdmin || isPlantHead || isAdmin || !uDept || mDept === uDept;
+
       var df=document.getElementById('sfDeptFilter');
-      if(isAdmin&&df&&df.value!=='All'){if(mDept!==df.value)return false;}
+      if((isUniverseAdmin || isPlantHead || isAdmin) && df && df.value !== 'All') {
+        if(mDept !== df.value) return false;
+      }
       return plantOk&&deptOk;
     });
 
